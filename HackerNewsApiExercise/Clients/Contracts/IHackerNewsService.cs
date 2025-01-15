@@ -1,6 +1,6 @@
 ﻿using HackerNewsApiExercise.Models.Entities;
 
-namespace HackerNewsApiExercise.Models.Clients.Contracts
+namespace HackerNewsApiExercise.Clients.Contracts
 {
     public interface IHackerNewsService
     {

@@ -1,11 +1,11 @@
-﻿using HackerNewsApiExercise.Models.Clients.Contracts;
+﻿using HackerNewsApiExercise.Clients.Contracts;
 using HackerNewsApiExercise.Models.Entities;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices;
 using static System.Net.WebRequestMethods;
 
-namespace HackerNewsApiExercise.Models.Clients
+namespace HackerNewsApiExercise.Clients
 {
     public class HackerNewsService : IHackerNewsService
     {
@@ -55,7 +55,7 @@ namespace HackerNewsApiExercise.Models.Clients
         /// </returns>
         public async Task<List<HackerNewsStory>?> GetNBestSotriesOrderedScoreDescending(int? numberOfStories)
         {
-            var listOfBestStoriesIds = await this.GetBestStoryIds();
+            var listOfBestStoriesIds = await GetBestStoryIds();
 
             if (listOfBestStoriesIds == null) throw new Exception("BestStories could not be retrieved.");
 
@@ -63,7 +63,7 @@ namespace HackerNewsApiExercise.Models.Clients
 
             if (listHackerNewsSories != null)
             {
-                listHackerNewsSories = listHackerNewsSories.OrderBy(x => x.Score).ToList();
+                listHackerNewsSories = listHackerNewsSories.OrderByDescending(x => x.Score).ToList();
             }
 
             if (numberOfStories != null)
@@ -84,7 +84,7 @@ namespace HackerNewsApiExercise.Models.Clients
         /// </returns>
         public async Task<List<HackerNewsStory>?> GetNBestSotriesOrderedScoreAscending(int? numberOfStories)
         {
-            var listOfBestStoriesIds = await this.GetBestStoryIds();
+            var listOfBestStoriesIds = await GetBestStoryIds();
 
             if (listOfBestStoriesIds == null) throw new Exception("BestStories could not be retrieved.");
 
@@ -92,11 +92,11 @@ namespace HackerNewsApiExercise.Models.Clients
 
             if (listHackerNewsSories != null)
             {
-                listHackerNewsSories = listHackerNewsSories.OrderByDescending(x => x.Score).ToList();            
+                listHackerNewsSories = listHackerNewsSories.OrderBy(x => x.Score).ToList();
             }
 
             if (numberOfStories != null)
-            {                
+            {
                 listHackerNewsSories = listHackerNewsSories.Take(numberOfStories.Value).ToList();
             }
 
@@ -119,7 +119,7 @@ namespace HackerNewsApiExercise.Models.Clients
             {
                 cacheEntry.SlidingExpiration = TimeSpan.FromMinutes(5);
                 List<HackerNewsStory> hackerNewsListFrromCache = new List<HackerNewsStory>();
-           
+
                 if (listOfBestStoriesIds != null)
                 {
                     foreach (var storyId in listOfBestStoriesIds)
@@ -133,13 +133,13 @@ namespace HackerNewsApiExercise.Models.Clients
                                                         var uri = GetClientBaseUri("/item/" + storyId);
                                                         var responseString = await _httpClient.GetStringAsync(uri);
                                                         var hackerNewsStory = new HackerNewsStory();
-           
+
                                                         if (!string.IsNullOrEmpty(responseString))
                                                         {
                                                             hackerNewsStory = JsonConvert.DeserializeObject<HackerNewsStory>(responseString);
-           
+
                                                         }
-           
+
                                                         return hackerNewsStory;
                                                     });
 
@@ -147,7 +147,7 @@ namespace HackerNewsApiExercise.Models.Clients
                     }
                 }
 
-                return hackerNewsListFrromCache;           
+                return hackerNewsListFrromCache;
             });
 
             return hackerNewsList;
@@ -159,6 +159,6 @@ namespace HackerNewsApiExercise.Models.Clients
             return new Uri(_httpClient.BaseAddress != null ?
                            _httpClient.BaseAddress.ToString() + stringReplace + ".json" :
                            "https://hacker-news.firebaseio.com/v0/" + stringReplace + ".json");
-        }        
+        }
     }
 }

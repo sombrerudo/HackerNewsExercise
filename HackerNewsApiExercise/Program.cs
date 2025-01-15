@@ -1,5 +1,5 @@
-using HackerNewsApiExercise.Models.Clients;
-using HackerNewsApiExercise.Models.Clients.Contracts;
+using HackerNewsApiExercise.Clients;
+using HackerNewsApiExercise.Clients.Contracts;
 using Polly;
 using Polly.Extensions.Http;
 
